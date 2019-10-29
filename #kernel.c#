@@ -8,14 +8,14 @@ void printChar(char);
 void readString(char*);
 void readSector(char*, int);
 void handleInterrupt21(int, int, int, int);
-void readFile(char*,char*,int);
+void readFile(char*);
 
 int main()
 {
   char buffer[13312];
   int sectorsRead;
   makeInterrupt21();
-  interrupt(0x21,3,"messag",buffer,&sectorsRead);
+  interrupt(021,3,"messag",buffer,&sectorsRead);
   if(sectorsRead>0)
     interrupt(0x21, 0, buffer, 0, 0);
   else
@@ -102,8 +102,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
   else if(ax == 3)
     {
       readFile(bx,cx,dx);
-    }
-     else
+  else
     {
       printString("that is an incorrect call");
     }
@@ -115,20 +114,13 @@ void readFile(char* filename, char buffer,int sectorsRead)
   char directory[512];
   int fileEntry;
   int count;
-  int c;
   
   readSector(directory,2);
 
   for(fileEntry = 0; fileEntry < 512; fileEntry+32)
     {
-      for(c = 0; c<5;c++)
+      for(int c = 0; c<5;c++)
 	{
-	  printChar(c);
-	  if(filename[0] == directory[fileEntry+c])	    
-	    {
-	      count++;
-	    }
-	}
-    }
-}
+	  printChar[c];
+	  if(filename[0] == directory[fileEntry}
 
