@@ -8,18 +8,19 @@ void printChar(char);
 void readString(char*);
 void readSector(char*, int);
 void handleInterrupt21(int, int, int, int);
-void readFile(char*,char*,int);
+void readFile(char*,char*,int*);
+int stringCompare(char*, char*);
 
 int main()
 {
   char buffer[13312];
   int sectorsRead;
   makeInterrupt21();
-  interrupt(0x21,3,"messag",buffer,&sectorsRead);
+  interrupt(0x21, 3, "messag", buffer, &sectorsRead);
   if(sectorsRead>0)
     interrupt(0x21, 0, buffer, 0, 0);
   else
-    interrupt(0x21,0,"messag not found\r\n",0,0);
+    interrupt(0x21, 0, "messag not found\r\n", 0, 0);
   while(1);
 }
 
@@ -110,25 +111,52 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 }
 
 
-void readFile(char* filename, char buffer,int sectorsRead)
+void readFile(char* filename, char* buffer,int* sectorsRead)
 {
-  char directory[512];
-  int fileEntry;
-  int count;
-  int c;
-  
-  readSector(directory,2);
+  int fileentry, i, c, check = 0;
+  char temp[6];
+  char dir[512];
 
-  for(fileEntry = 0; fileEntry < 512; fileEntry+32)
+  readSector(dir,2);
+
+  
+  for(fileentry = 0; fileentry < 512; fileentry = fileentry+32)
     {
-      for(c = 0; c<5;c++)
+        for(i = 0; i < 6; i++)
 	{
-	  printChar(c);
-	  if(filename[0] == directory[fileEntry+c])	    
-	    {
-	      count++;
-	    }
+	  temp[i] = dir[fileentry+i]; 
+	}
+	check = stringCompare(temp, filename);
+	if(check != 0)
+	  break;
+    }
+
+  if(check == 0)
+    {
+      *sectorsRead = 0;
+      return;
+    }
+  else
+    {
+      for(c = fileentry+6; c < fileentry+32 ; c ++)
+	{
+	  readSector(buffer,dir[c]);
+	  *sectorsRead = *sectorsRead + 1;
+	  buffer = buffer + 512;
 	}
     }
 }
 
+
+int stringCompare(char* message1, char* message2)
+{
+  int count;
+  for(count = 0; count <= 5;count++)
+    {
+      if(message1[count] != message2[count])
+	{
+	  return 0;
+	}
+    }
+  return 1;
+}
