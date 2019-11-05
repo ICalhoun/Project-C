@@ -10,17 +10,13 @@ void readSector(char*, int);
 void handleInterrupt21(int, int, int, int);
 void readFile(char*,char*,int*);
 int stringCompare(char*, char*);
+void executeProgram(char*);
+void terminate();
 
 int main()
 {
-  char buffer[13312];
-  int sectorsRead;
   makeInterrupt21();
-  interrupt(0x21, 3, "messag", buffer, &sectorsRead);
-  if(sectorsRead>0)
-    interrupt(0x21, 0, buffer, 0, 0);
-  else
-    interrupt(0x21, 0, "messag not found\r\n", 0, 0);
+  interrupt(0x21, 4, "shell", 0, 0);
   while(1);
 }
 
@@ -104,6 +100,14 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     {
       readFile(bx,cx,dx);
     }
+  else if(ax == 4)
+    {
+      executeProgram(bx);
+    }
+  else if(ax == 5)
+    {
+      terminate();
+    }
      else
     {
       printString("that is an incorrect call");
@@ -157,6 +161,54 @@ int stringCompare(char* message1, char* message2)
 	{
 	  return 0;
 	}
+      else if(message1[count] == '\0')
+	{
+	  break;
+	}
+      else if(message1[count] == '\r')
+	{
+	  break;
+	}
     }
   return 1;
+}
+
+
+void executeProgram(char* name)
+{
+  char buffer[13312];
+  int* sectors;
+  int count = 0, memStart = 0x2000;
+  int offset = 0x0;
+  readFile(name, buffer, &sectors);
+ 
+  if(sectors = 0)
+    {
+      printString("No such program.");
+    }
+  else
+    {
+      for(count; count < 13312;count++)
+	{
+	  putInMemory(memStart, offset, buffer[count]);
+	  offset = offset + 1;
+	}
+    }
+  launchProgram(memStart);
+}
+
+void terminate()
+{
+  char shellname[6];
+
+  shellname[0] = 's';
+  shellname[1] = 'h';
+  shellname[2] = 'e';
+  shellname[3] = 'l';
+  shellname[4] = 'l';
+  shellname[5] = '\0';
+
+  executeProgram(shellname);
+  
+  while(1);
 }
