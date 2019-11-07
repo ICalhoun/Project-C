@@ -1,35 +1,29 @@
 #include <stdio.h>
-int stringCompare(char*, char*);
 
 int main()
 {
-  char* line[83];
-  int i = 0, check;
-  char command[6];
+  char line[83];
+  int sectorsRead = 0;
+  char buffer[13312];
   
   syscall(0,"SHELL>: ");
   syscall(1, line);
-  syscall(3, line+5,check);
-  return 0;
-}
-
-int stringCompare(char* message1, char* message2)
-{
-  int count;
-  for(count = 0; count <= 5;count++)
+  if((line[0] == 't')&&(line[1] == 'y')&&(line[2] == 'p')&&(line[3] == 'e'))
     {
-      if(message1[count] != message2[count])
+      syscall(3, line+5, buffer, &sectorsRead);
+      
+      if(sectorsRead != 0)
 	{
-	  return 0;
+	  syscall(0, buffer);
 	}
-      else if(message1[count] == '\0')
+      else
 	{
-	  break;
-	}
-      else if(message1[count] == '\r')
-	{
-	  break;
+	  syscall(0, "invalid file");
 	}
     }
-  return 1;
+  else if((line[0] == 'e')&&(line[1] == 'x')&&(line[2] == 'e')&&(line[3] == 'c'))
+    {
+      syscall(4, line+5);
+    }
 }
+

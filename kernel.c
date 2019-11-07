@@ -20,6 +20,7 @@ int main()
   while(1);
 }
 
+
 void printString(char* chars)
 {
   while(*chars != 0x0)
@@ -122,7 +123,6 @@ void readFile(char* filename, char* buffer,int* sectorsRead)
   char dir[512];
 
   readSector(dir,2);
-
   
   for(fileentry = 0; fileentry < 512; fileentry = fileentry+32)
     {
@@ -196,6 +196,7 @@ void executeProgram(char* name)
     }
   launchProgram(memStart);
 }
+
 
 void terminate()
 {
