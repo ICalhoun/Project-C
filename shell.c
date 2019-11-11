@@ -8,6 +8,7 @@ int main()
   
   syscall(0,"SHELL>: ");
   syscall(1, line);
+
   if((line[0] == 't')&&(line[1] == 'y')&&(line[2] == 'p')&&(line[3] == 'e'))
     {
       syscall(3, line+5, buffer, &sectorsRead);

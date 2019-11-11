@@ -57,7 +57,6 @@ void readString(char* line)
 	    {
 	      interrupt(0x10, 0xe*256+0x8, 0, 0, 0);
 	      count--;
-	      line[count] = 0x0;
 	      interrupt(0x10, 0xe*256+' ', 0, 0, 0);
 	      interrupt(0x10, 0xe*256+0x8, 0, 0, 0);
 	    }
