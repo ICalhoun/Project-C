@@ -1,3 +1,8 @@
+/* Ian Calhoun
+   Sean Butrica
+   Comp 
+   11/14/2019 */
+
 #include <stdio.h>
 
 int main()
